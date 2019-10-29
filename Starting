@@ -1,0 +1,27 @@
+CONNECTING
+psql postgresql://user:passwd@host:5432/db
+
+INVESTIGATE
+SELECT version(), current_database(), current_user, inet_server_addr(), inet_server_port();
+
+
+SELECT * FROM pg_stat_activity;
+SELECT pg_cancel_backend(<pid>);
+SELECT pg_terminate_backend(<pid>)
+\conninfo
+
+
+DUMP/RESTORE
+time pg_dump -Fc <db> -f db.dump
+time pg_dump -j 8 -Fd -f db.dump
+
+time pg_restore -j 8 --format=c -C -d postgres db.dump
+
+postgres.conf
+work_mem = 32MB
+shared_buffers = 4GB
+maintenance_work_mem = 2GB
+full_page_writes = off
+autovacuum = off
+wal_buffers = -1
+
