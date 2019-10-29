@@ -1,9 +1,42 @@
+BOOKS
+PostgreSQL 11 Administration Cookbook
+By Simon Riggs, Gianni Ciolli, Sudheer Kumar Meesala
+May 2019
+
+pg_lsclusters
+/var/log/postgresql
+
 CONNECTING
-psql postgresql://user:passwd@host:5432/db
+sudo -u postgres psql "postgresql://user:passwd@host:5432/db?sslmode=require"
+sudo -u postgres psql --set=sslmode=require -h <host> -p 5432 -U <user> -d <db>
 
-INVESTIGATE
+/var/lib/postgresql/.pgpass
+host:port:dbname:user:password
+
+RUN
+psql -c "SELECT current_time"
+psql -f examples.sql
+
+Exploring
+psql --version
 SELECT version(), current_database(), current_user, inet_server_addr(), inet_server_port();
+SELECT datname FROM pg_database;
+SELECT date_trunc('second', pg_postmaster_start_time()) AS start_time, 
+       date_trunc('second', current_timestamp - pg_postmaster_start_time()) AS uptime;
 
+SELECT count(*) FROM information_schema.tables
+WHERE table_schema NOT IN ('information_schema','pg_catalog');
+
+SELECT pg_size_pretty(pg_database_size(current_database()));
+SELECT pg_size_pretty(sum(pg_database_size(datname))) from pg_database;
+
+select pg_size_pretty(pg_relation_size('table_name')); --only table
+select pg_size_pretty(pg_total_relation_size('table_name')); -- table + index + toast
+\dt+
+
+SET password_encryption = 'scram-sha-256'; 
+
+\timing on
 
 SELECT * FROM pg_stat_activity;
 SELECT pg_cancel_backend(<pid>);
