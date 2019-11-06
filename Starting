@@ -58,3 +58,4 @@ full_page_writes = off
 autovacuum = off
 wal_buffers = -1
 
+CREATE INDEX CONCURRENTLY <column>_index_on_<table> ON <table>(<column>);
