@@ -59,3 +59,5 @@ autovacuum = off
 wal_buffers = -1
 
 CREATE INDEX CONCURRENTLY <column>_index_on_<table> ON <table>(<column>);
+
+WITH x AS (SELECT *, lead(<column>) OVER (ORDER BY <column>) = <column> + 1 AS gap FROM <table>) SELECT * FROM x WHERE NOT gap;
