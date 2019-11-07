@@ -61,3 +61,6 @@ wal_buffers = -1
 CREATE INDEX CONCURRENTLY <column>_index_on_<table> ON <table>(<column>);
 
 WITH x AS (SELECT *, lead(<column>) OVER (ORDER BY <column>) = <column> + 1 AS gap FROM <table>) SELECT * FROM x WHERE NOT gap;
+
+(echo "COPY <table> FROM STDIN;";psql -h <host> -p <port> -U <user> -d <db> -c "COPY (SELECT * FROM <table> WHERE <column> = <value>) TO STDOUT;") | psql -h <host> -p <port> -U <user> -d <DB>
+
