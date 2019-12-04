@@ -65,3 +65,11 @@ WITH x AS (SELECT *, lead(<column>) OVER (ORDER BY <column>) = <column> + 1 AS g
 (echo "COPY <table> FROM STDIN;";psql -h <host> -p <port> -U <user> -d <db> -c "COPY (SELECT * FROM <table> WHERE <column> = <value>) TO STDOUT;") | psql -h <host> -p <port> -U <user> -d <DB>
 
 SELECT left(usename,10) as user , /* client_addr,*/ date_trunc('seconds',(now() - xact_start)) AS trx, date_trunc('seconds',now() - query_start) AS run, length(query), left(query,100), left(state,8) AS status FROM pg_stat_activity WHERE state != 'idle' AND query ~ '' ORDER BY trx;
+
+-- Missing Index?
+SELECT relname, seq_scan-idx_scan AS too_much_seq,
+   case when seq_scan-idx_scan>0 THEN 'Missing Index?' ELSE 'OK' END,
+   pg_relation_size(relid::regclass) AS rel_size, seq_scan, idx_scan
+FROM pg_stat_all_tables
+WHERE schemaname='public' AND pg_relation_size(relid::regclass)>80000
+ORDER BY too_much_seq DESC;
