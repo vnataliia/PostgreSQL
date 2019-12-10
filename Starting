@@ -73,3 +73,10 @@ SELECT relname, seq_scan-idx_scan AS too_much_seq,
 FROM pg_stat_all_tables
 WHERE schemaname='public' AND pg_relation_size(relid::regclass)>80000
 ORDER BY too_much_seq DESC;
+
+SELECT datname, temp_files AS "Temporary files",space_size_pretty(temp_bytes) AS "Size of temporary files" FROM pg_stat_database ;
+
+SELECT * FROM pg_stat_replication;
+
+select * from pg_stat_all_tables where relname='test';
+-- dead
