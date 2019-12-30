@@ -80,3 +80,27 @@ SELECT * FROM pg_stat_replication;
 
 select * from pg_stat_all_tables where relname='test';
 -- dead
+
+
+\df
+-- PG11
+SELECT p.proname AS function_name
+     , pg_get_function_identity_arguments(p.oid) AS parameter_list
+     , pg_get_functiondef(p.oid) AS function_def  -- CREATE FUNCTION statement
+FROM   pg_proc p
+LEFT   JOIN pg_depend d ON d.objid = p.oid 
+                       AND d.deptype = 'e'        -- would depend on extension
+WHERE  p.pronamespace = 'public'::regnamespace    -- your schema(s) of interest
+AND    d.objid IS NULL                            -- no such dependency
+AND    p.prokind = 'f';                           -- only plain functions
+
+-- PG10
+SELECT p.proname AS function_name,
+       pg_get_function_identity_arguments(p.oid) AS parameter_list,
+       pg_get_functiondef(p.oid) AS function_def 
+FROM   pg_proc p
+LEFT   JOIN pg_depend d ON d.objid = p.oid AND d.deptype = 'e'
+WHERE  p.pronamespace = 'public'::regnamespace
+AND    d.objid IS NULL 
+AND    NOT proisagg AND NOT proiswindow
+;
