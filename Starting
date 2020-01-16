@@ -9,6 +9,9 @@ May 2018
 
 === 
 pg_lsclusters
+pg_ctl reload / restart
+pg_ctlcluster 10 main reload / restart / start
+sudo systemctl reload / restart / start postgresql-10 
 /var/log/postgresql
 
 === CONNECTING
@@ -46,8 +49,33 @@ SELECT count(*) FROM information_schema.tables
 WHERE table_schema NOT IN ('information_schema','pg_catalog');
 
 === ???
+-- WHERE oid = 'mytable'::regclass;
+-- relname2relid()
+SELECT reltablespace, relfilenode FROM pg_class WHERE oid = 'mytable'::regclass;
+SELECT oid as databaseid FROM pg_database WHERE datname = current_database();
+$PGDATADIR/base/{databaseid}/{relfilenode}*
+$PGDATADIR/pg_tblspc/{reltablespace}/{databaseid}/{relfilenode}*
+
+
+=== EXTENSIONS
+\dx+
+SELECT * FROM pg_extension;
+SELECT * FROM pg_available_extensions;
+SHOW shared_preload_libraries;
+
+=== Conf
+SHOW work_mem;
+SET work_mem = '16MB'; -- during your session
+SET LOCAL work_mem = '16MB'; -- only for the duration of the current transaction
+RESET work_mem;
+-- RESET ALL;
+SELECT name, setting, reset_val, source FROM pg_settings WHERE source = 'default'; 
+SELECT * FROM pg_settings WHERE name = 'work_mem';
+SHOW config_file;
 
 SET password_encryption = 'scram-sha-256'; 
+
+SELECT pg_terminate_backend(pid);
 
 \timing on
 
