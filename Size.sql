@@ -58,3 +58,4 @@ select pg_size_pretty(pg_relation_size('table_name')); --only table
 select pg_size_pretty(pg_indexes_size('table_name')); --only indexes
 select pg_size_pretty(pg_total_relation_size('table_name')); -- table + index + toast
                                              
+-- TOAST stands for The Oversize Attribute Storage Technique
