@@ -3,12 +3,17 @@ PostgreSQL 11 Administration Cookbook
 By Simon Riggs, Gianni Ciolli, Sudheer Kumar Meesala
 May 2019
 
+PostgreSQL 10 Administration Cookbook
+By Simon Riggs, Gianni Ciolli
+May 2018
+
 pg_lsclusters
 /var/log/postgresql
 
 CONNECTING
-sudo -u postgres psql "postgresql://user:passwd@host:5432/db?sslmode=require"
 sudo -u postgres psql --set=sslmode=require -h <host> -p 5432 -U <user> -d <db>
+Uniform Resource Identifier (URI) format:
+sudo -u postgres psql "postgresql://user:passwd@host:5432/db?sslmode=require"
 
 /var/lib/postgresql/.pgpass
 host:port:dbname:user:password
@@ -17,8 +22,9 @@ RUN
 psql -c "SELECT current_time"
 psql -f examples.sql
 
-Exploring
+EXPLORING
 psql --version
+\conninfo
 SELECT version(), current_database(), current_user, inet_server_addr(), inet_server_port();
 SELECT datname FROM pg_database;
 SELECT date_trunc('second', pg_postmaster_start_time()) AS start_time, 
