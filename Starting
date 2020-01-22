@@ -144,3 +144,6 @@ WHERE  p.pronamespace = 'public'::regnamespace
 AND    d.objid IS NULL 
 AND    NOT proisagg AND NOT proiswindow
 ;
+
+-- unique field
+SELECT attname, n_distinct FROM pg_stats WHERE tablename = '';
