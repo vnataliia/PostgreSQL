@@ -59,3 +59,11 @@ select pg_size_pretty(pg_indexes_size('table_name')); --only indexes
 select pg_size_pretty(pg_total_relation_size('table_name')); -- table + index + toast
                                              
 -- TOAST stands for The Oversize Attribute Storage Technique
+SELECT nspname || '.' || relname AS table,
+       space_size_pretty(pg_relation_size(c.oid)) AS size,
+       (SELECT relname FROM pg_class WHERE reltoastrelid = c.oid) AS owner
+  FROM pg_class c 
+  LEFT JOIN pg_namespace n ON (n.oid = c.relnamespace) 
+ WHERE nspname NOT IN ('pg_catalog', 'information_schema') 
+ ORDER BY pg_relation_size(c.oid) DESC 
+ LIMIT 20;
