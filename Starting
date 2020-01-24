@@ -147,3 +147,8 @@ AND    NOT proisagg AND NOT proiswindow
 
 -- unique field
 SELECT attname, n_distinct FROM pg_stats WHERE tablename = '';
+
+-- reset stat
+pg_stat_statements_20191224
+SELECT * FROM pg_stat_statements_reset();
+
