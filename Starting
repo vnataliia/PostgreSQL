@@ -150,5 +150,6 @@ SELECT attname, n_distinct FROM pg_stats WHERE tablename = '';
 
 -- reset stat
 pg_stat_statements_20191224
+CREATE TABLE pg_stat_statements_20200218 AS SELECT * FROM pg_stat_statements;
 SELECT * FROM pg_stat_statements_reset();
 
