@@ -149,7 +149,13 @@ AND    NOT proisagg AND NOT proiswindow
 SELECT attname, n_distinct FROM pg_stats WHERE tablename = '';
 
 -- reset stat
-pg_stat_statements_20191224
-CREATE TABLE pg_stat_statements_20200218 AS SELECT * FROM pg_stat_statements;
+pg_stat_statements_2010mmdd_hh_<m/s>
+CREATE TABLE pg_stat_statements_2020mmdd_hh_<m/s> AS SELECT * FROM pg_stat_statements;
 SELECT * FROM pg_stat_statements_reset();
+
+\copy (SELECT * FROM pg_stat_statements) to '/tmp/pg_stat_statements_2020mmdd_hh_<m/s>.sql'
+CREATE TABLE pg_stat_statements_20200221_sl AS SELECT * FROM pg_stat_statements LIMIT 0;
+\copy pg_stat_statements_20200221_sl from /tmp/slave_pg_stats.sql
+
+
 
