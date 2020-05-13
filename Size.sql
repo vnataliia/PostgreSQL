@@ -67,3 +67,8 @@ SELECT nspname || '.' || relname AS table,
  WHERE nspname NOT IN ('pg_catalog', 'information_schema') 
  ORDER BY pg_relation_size(c.oid) DESC 
  LIMIT 20;
+
+SELECT temp_files, pg_size_pretty(temp_bytes::int8) AS temp_size, stats_reset, pg_size_pretty(pg_database_size(current_database())) AS db_size
+FROM pg_stat_database db WHERE datname = current_database(); 
+                                                                                                               
+                                                                                                               
