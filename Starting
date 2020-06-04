@@ -157,5 +157,5 @@ SELECT * FROM pg_stat_statements_reset();
 CREATE TABLE pg_stat_statements_20200221_sl AS SELECT * FROM pg_stat_statements LIMIT 0;
 \copy pg_stat_statements_20200221_sl from /tmp/slave_pg_stats.sql
 
-
+psql -E --"Get equivalent SQL query for any Postgres meta-command"
 
