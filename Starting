@@ -159,3 +159,5 @@ CREATE TABLE pg_stat_statements_20200221_sl AS SELECT * FROM pg_stat_statements 
 
 psql -E --"Get equivalent SQL query for any Postgres meta-command"
 
+SELECT schemaname,relname,last_autovacuum,last_autoanalyze,autovacuum_count,autoanalyze_count FROM pg_stat_all_tables WHERE NOT schemaname IN ('pg_toast','pg_catalog');
+
