@@ -28,7 +28,8 @@ REINDEX (VERBOSE) DATABASE CONCURRENTLY <db_name>;
 
 -- reindex progress
 SELECT now()::time(0), a.query, p.phase,
-       p.blocks_total, p.blocks_done, p.tuples_total, p.tuples_done,
+       p.blocks_total, CASE WHEN NOT p.blocks_done = 0 THEN round(p.blocks_done::float/p.blocks_total*100) ELSE 0 END AS "% blocks done",
+       p.tuples_total, CASE WHEN NOT p.tuples_done = 0 THEN round(p.tuples_done::float/p.tuples_total*100) ELSE 0 END AS "% tuples done",
        (SELECT relname FROM pg_class WHERE oid = relid) AS table,
        (SELECT relname FROM pg_class WHERE reltoastrelid = relid::regclass) AS parent
   FROM pg_stat_progress_create_index p
