@@ -38,12 +38,7 @@ SELECT now()::time(0), a.query, p.phase,
        p.pid = a.pid;
       
 -- CHECK SIZE
-SELECT schema || '.' || table_name, pg_size_pretty(index_size), pg_size_pretty(by_table), 
-       CASE WHEN by_table*1.2 < index_size THEN '+' END, 
-       CASE WHEN NOT index_size = 0 THEN round(by_table::float/index_size *100) END AS "%"
-  FROM pg_size_growth sg
-  JOIN LATERAL (SELECT sum(pg_relation_size(s.indexrelid)) OVER (PARTITION BY s.schemaname, s.relname) AS by_table
-                  FROM pg_catalog.pg_stat_user_indexes s WHERE s.relname = sg.table_name LIMIT 1
-       ) AS s ON true
- WHERE ts > now()::date AND by_table*1.01 < index_size ORDER BY index_size DESC LIMIT 40;
+SELECT schema || '.' || table_name, pg_size_pretty(index_size) AS PG10_size,
+                     pg_size_pretty(by_table) AS PG12_size, pg_size_pretty(index_size-by_table) AS diff, pg_size_pretty(sum(index_size-by_table) OVER()) AS profit, CASE WHEN by_table*1.2 < index_size THEN '+' END, CASE WHEN NOT index_size = 0 THEN round(by_table::float/index_size *100) END AS "%" FROM pg_size_growth sg JOIN LATERAL (SELECT sum(pg_relation_size(s.indexrelid)) OVER (PARTITION BY s.schemaname, s.relname) AS by_table FROM pg_catalog.pg_stat_user_indexes s WHERE s.relname = sg.table_name LIMIT 1) AS s ON true
+ WHERE ts > now()::date AND by_table*1.01 < index_size ORDER BY index_size DESC LIMIT 40; 
 
