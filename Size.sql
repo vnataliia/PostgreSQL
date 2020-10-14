@@ -71,4 +71,12 @@ SELECT nspname || '.' || relname AS table,
 SELECT temp_files, pg_size_pretty(temp_bytes::int8) AS temp_size, stats_reset, pg_size_pretty(pg_database_size(current_database())) AS db_size
 FROM pg_stat_database db WHERE datname = current_database(); 
                                                                                                                
-                                                                                                               
+
+                                                                                                              SELECT schemaname, relname, n_live_tup, n_dead_tup, last_autovacuum
+FROM pg_stat_all_tables
+ORDER BY n_dead_tup
+    / (n_live_tup
+       * current_setting('autovacuum_vacuum_scale_factor')::float8
+          + current_setting('autovacuum_vacuum_threshold')::float8)
+     DESC
+LIMIT 10;
