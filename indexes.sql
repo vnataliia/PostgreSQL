@@ -36,9 +36,12 @@ SELECT now()::time(0), a.query, p.phase,
   FROM pg_stat_progress_create_index p
   JOIN pg_stat_activity a ON
        p.pid = a.pid;
+-- new version
+SELECT /*a.query,*/ p.phase, p.blocks_total, CASE WHEN NOT p.blocks_done = 0 THEN round(p.blocks_done::float/p.blocks_total*100) ELSE 0 END AS "% blocks done", p.tuples_total, CASE WHEN NOT p.tuples_done = 0THEN round(p.tuples_done::float/p.tuples_total*100) ELSE 0 END AS "% tuples done", (SELECT relname FROM pg_class WHERE oid = relid) AS table, (SELECT relname FROM pg_class WHERE reltoastrelid = relid::regclass) AS parent, index_relid::regclass AS i FROM pg_stat_progress_create_index p JOIN pg_stat_activity a ON p.pid = a.pid;
       
 -- CHECK SIZE
-SELECT schema || '.' || table_name, pg_size_pretty(index_size) AS PG10_size,
-                     pg_size_pretty(by_table) AS PG12_size, pg_size_pretty(index_size-by_table) AS diff, pg_size_pretty(sum(index_size-by_table) OVER()) AS profit, CASE WHEN by_table*1.2 < index_size THEN '+' END, CASE WHEN NOT index_size = 0 THEN round(by_table::float/index_size *100) END AS "%" FROM pg_size_growth sg JOIN LATERAL (SELECT sum(pg_relation_size(s.indexrelid)) OVER (PARTITION BY s.schemaname, s.relname) AS by_table FROM pg_catalog.pg_stat_user_indexes s WHERE s.relname = sg.table_name LIMIT 1) AS s ON true
- WHERE ts > now()::date AND by_table*1.01 < index_size ORDER BY index_size DESC LIMIT 40; 
+SELECT schema || '.' || table_name AS table, pg_size_pretty(index_size) AS PG10_size, pg_size_pretty(by_table) AS PG12_size, pg_size_pretty(index_size-by_table) AS diff, pg_size_pretty(sum(index_size-by_table) OVER()) AS profit, CASE WHEN by_table*1.2 < index_size THEN '+' END, CASE WHEN NOT index_size = 0 THEN round(by_table::float/index_size *100) END AS "%"
+  FROM pg_size_growth sg JOIN LATERAL (SELECT sum(pg_relation_size(s.indexrelid)) OVER (PARTITION BY s.schemaname, s.relname) AS by_table FROM pg_catalog.pg_stat_user_indexes s WHERE s.relname = sg.table_name LIMIT 1) AS s ON true
+ WHERE ts::date = '2020-10-13' AND by_table*1.01 < index_size ORDER BY table_name, index_size DESC;
+
 
