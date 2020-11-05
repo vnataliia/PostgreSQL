@@ -157,7 +157,11 @@ SELECT * FROM pg_stat_statements_reset();
 CREATE TABLE pg_stat_statements_20200221_sl AS SELECT * FROM pg_stat_statements LIMIT 0;
 \copy pg_stat_statements_20200221_sl from /tmp/slave_pg_stats.sql
 
+SELECT ss.calls AS cal, ss_p.calls AS cal_p, date_trunc('sec',ss.min_time * '1 ms'::interval) AS min, date_trunc('sec',ss_p.min_time * '1 ms'::interval) AS min_p, date_trunc('sec',ss.mean_time * '1 ms'::interval) AS mean, date_trunc('sec',ss_p.mean_time * '1 ms'::interval) AS mean_p, date_trunc('sec',ss.max_time * '1 ms'::interval) AS max, date_trunc('sec',ss_p.max_time * '1 ms'::interval) AS max_p, substr(trim(regexp_replace(ss.query, E'[\\n\\r\\s]+', ' ', 'g' )),1,100) AS query FROM pg_stat_statements AS ss JOIN pg_stat_statements_20201103_15 AS ss_p USING (query) WHERE ss.query ~* 'current_ps_oms' AND NOT ss.query ~* '^EXPLAIN|ANALYZE|GRANT|CREATE|DROP|ALTER' ORDER BY ss.query DESC;
+
 psql -E --"Get equivalent SQL query for any Postgres meta-command"
+
+\a - unformated
 
 SELECT schemaname,relname,last_autovacuum,last_autoanalyze,autovacuum_count,autoanalyze_count FROM pg_stat_all_tables WHERE NOT schemaname IN ('pg_toast','pg_catalog');
 SELECT relname FROM pg_class WHERE reltoastrelid = <relid>::regclass;
